@@ -165,16 +165,32 @@ export default function OnboardingPage({ navigate }) {
 
   const next = () => { if (!validateStep()) return; setStep(s => s + 1) }
 
-  const submit = () => {
+  const submit = async () => {
     const customers = JSON.parse(localStorage.getItem('cf_customers') || '[]')
     const exists = customers.find(c => c.username === form.username || c.gstin === form.gstin)
     if (exists) { setErrors({ username: 'Username or GSTIN already registered' }); return }
+
+    // Read all uploaded files as base64 so the PDF Viewer can display them
+    const toBase64 = (file) => new Promise((res, rej) => {
+      const r = new FileReader()
+      r.onload = e => res(e.target.result.split(',')[1])
+      r.onerror = rej
+      r.readAsDataURL(file)
+    })
+    const docEntries = await Promise.all(
+      Object.entries(files).map(async ([k, v]) => {
+        let data = null
+        try { data = await toBase64(v) } catch {}
+        return [k, { name: v.name, size: v.size, type: v.type, data }]
+      })
+    )
+
     const newCustomer = {
       id: Date.now().toString(), ...form,
       password: btoa(form.password),
       registeredAt: new Date().toISOString(),
       status: 'active',
-      documents: Object.fromEntries(Object.entries(files).map(([k, v]) => [k, { name: v.name, size: v.size, type: v.type }])),
+      documents: Object.fromEntries(docEntries),
       creditApplications: [],
     }
     customers.push(newCustomer)
