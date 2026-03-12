@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
-import { Search, Users, FileText, CreditCard, TrendingUp, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronRight, Download, X, Filter } from 'lucide-react'
+import { Search, Users, FileText, CreditCard, TrendingUp, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronRight, X, Zap } from 'lucide-react'
+import DocumentParser from '../components/DocumentParser.jsx'
 
 function Stat({ label, value, icon, color = 'var(--accent)', bg = 'var(--accent-light)' }) {
   return (
@@ -49,13 +50,15 @@ function CustomerModal({ customer, onClose }) {
 
         {/* Tabs */}
         <div style={{ display: 'flex', padding: '0 28px', borderBottom: '1px solid var(--border)' }}>
-          {['info', 'documents', 'applications'].map(t => (
+          {['info', 'documents', 'ai-analysis', 'applications'].map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               background: 'none', border: 'none', padding: '12px 16px', cursor: 'pointer',
-              fontSize: 13, fontWeight: 600, textTransform: 'capitalize', letterSpacing: '0.02em',
+              fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap',
               color: tab === t ? 'var(--ink)' : 'var(--slate)',
               borderBottom: tab === t ? '2px solid var(--ink)' : '2px solid transparent',
-            }}>{t}</button>
+            }}>
+              {t === 'ai-analysis' ? '⚡ AI Analysis' : t.charAt(0).toUpperCase() + t.slice(1)}
+            </button>
           ))}
         </div>
 
@@ -104,6 +107,19 @@ function CustomerModal({ customer, onClose }) {
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+
+          {tab === 'ai-analysis' && (
+            <div>
+              <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Zap size={16} color="var(--gold)" />
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)' }}>AI Document Analysis</div>
+                  <div style={{ fontSize: 12, color: 'var(--slate)' }}>Upload documents for {customer.firmName} to parse, extract key values, and flag issues</div>
+                </div>
+              </div>
+              <DocumentParser />
             </div>
           )}
 
