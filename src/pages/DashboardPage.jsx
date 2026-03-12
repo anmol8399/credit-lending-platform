@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { FileText, CreditCard, CheckCircle, Clock, AlertCircle, ChevronRight, Bell, TrendingUp, Shield, Download } from 'lucide-react'
+import { FileText, CreditCard, CheckCircle, Clock, AlertCircle, ChevronRight, Bell, TrendingUp, Shield, Zap } from 'lucide-react'
 import Navbar from '../components/Navbar.jsx'
+import DocumentParser from '../components/DocumentParser.jsx'
 
 function StatCard({ label, value, sub, icon, color = 'var(--accent)', bg = 'var(--accent-light)' }) {
   return (
@@ -34,7 +35,7 @@ export default function DashboardPage({ user, navigate, logout }) {
   const docs = customerData.documents || {}
   const docCount = Object.keys(docs).length
 
-  const tabs = ['overview', 'documents', 'applications', 'profile']
+  const tabs = ['overview', 'documents', 'document-analysis', 'applications', 'profile']
 
   return (
     <div style={{ minHeight: '100vh', background: '#fafbfd' }}>
@@ -66,8 +67,10 @@ export default function DashboardPage({ user, navigate, logout }) {
               fontSize: 13, fontWeight: 600, cursor: 'pointer',
               color: activeTab === t ? 'var(--ink)' : 'var(--slate)',
               borderBottom: activeTab === t ? '2px solid var(--ink)' : '2px solid transparent',
-              textTransform: 'capitalize', letterSpacing: '0.02em',
-            }}>{t}</button>
+              letterSpacing: '0.02em', whiteSpace: 'nowrap',
+            }}>
+              {t === 'document-analysis' ? '⚡ AI Analysis' : t.charAt(0).toUpperCase() + t.slice(1)}
+            </button>
           ))}
         </div>
       </div>
@@ -269,6 +272,23 @@ export default function DashboardPage({ user, navigate, logout }) {
         )}
 
         {/* Profile Tab */}
+        {/* Document Analysis Tab */}
+        {activeTab === 'document-analysis' && (
+          <div className="animate-fade">
+            <div style={{ marginBottom: 24 }}>
+              <h2 style={{ fontSize: 24, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Zap size={22} color="var(--gold)" /> AI Document Analysis
+              </h2>
+              <p style={{ color: 'var(--slate)', fontSize: 13 }}>
+                Upload your financial documents and let our AI parse, summarise, flag issues, and extract all key values for credit assessment.
+              </p>
+            </div>
+            <div className="card">
+              <DocumentParser />
+            </div>
+          </div>
+        )}
+
         {activeTab === 'profile' && (
           <div className="animate-fade">
             <h2 style={{ fontSize: 24, marginBottom: 24 }}>Business Profile</h2>
